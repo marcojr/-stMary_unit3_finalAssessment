@@ -5,7 +5,7 @@ class IncidentManager:
         self.incidents = []
 
     def add_incident(self, incident):
-        self.incidents.append(incident)  # <- Faltava isso!
+        self.incidents.append(incident)  
 
     def update_incident(self, incident_id, **kwargs):
         for incident in self.incidents:
