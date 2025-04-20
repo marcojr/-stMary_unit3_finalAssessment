@@ -24,3 +24,7 @@ class TestIncident(unittest.TestCase):
     def test_update_status(self):
         self.incident.update_status("Assigned")
         self.assertEqual(self.incident.status, "Assigned")
+
+    def test_update_status_invalid(self):
+        self.incident.update_status("Non-existent-status")
+        self.assertEqual(self.incident.status, "Non-existent-status")  # Sem validação, aceita qualquer string

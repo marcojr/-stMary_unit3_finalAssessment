@@ -5,6 +5,8 @@ from resource_manager import ResourceManager
 from allocator import Allocator
 from resource import Ambulance, FireTruck, MedicalTeam
 from incident import Incident
+from locations import LOCATIONS, get_location_name_by_id
+
 
 def print_menu():
     print("\n=== Emergency Resource Allocation System ===")
@@ -18,26 +20,38 @@ def print_menu():
 
 def print_resources(resources):
     print("\n--- Resources ---")
+    print(f"{'ID':<4} {'Type':<12} {'Location':<12} {'Status':<10}")
+    print("-" * 40)
     for r in resources:
         status = "Available" if r.available else "Assigned"
-        print(f"ID: {r.id} | Type: {r.type} | Location: {r.location} | Status: {status}")
+        print(f"{r.id:<4} {r.type:<12} {r.location:<12} {status:<10}")
+
 
 def print_incidents(incidents):
     print("\n--- Incidents ---")
+    print(f"{'ID':<4} {'Type':<12} {'Priority':<8} {'Location':<12} {'Status':<10} {'Required Resources'}")
+    print("-" * 80)
     for i in incidents:
-        print(f"ID: {i.id} | Type: {i.emergency_type} | Priority: {i.priority} | Location: {i.location} | Status: {i.status} | Required: {i.required_resources}")
+        required = ', '.join(i.required_resources)
+        print(f"{i.id:<4} {i.emergency_type:<12} {i.priority:<8} {i.location:<12} {i.status:<10} {required}")
+
 
 def resource_type_menu():
-    print("1 - Ambulance")
-    print("2 - Fire Truck")
-    print("3 - Medical Team")
-    option = input("Select resource type: ").strip()
-    types = {
-        "1": "ambulance",
-        "2": "fire_truck",
-        "3": "medical_team"
-    }
-    return types.get(option)
+    while True:
+        print("1 - Ambulance")
+        print("2 - Fire Truck")
+        print("3 - Medical Team")
+        option = input("Select resource type: ").strip()
+        types = {
+            "1": "ambulance",
+            "2": "fire_truck",
+            "3": "medical_team"
+        }
+        if option in types:
+            return types[option]
+        else:
+            print("Invalid selection. Try again.")
+
 
 def main():
     incident_manager = IncidentManager()
@@ -54,8 +68,27 @@ def main():
             if not r_type_str:
                 print("Invalid selection.")
                 continue
-            r_id = int(input("ID: "))
-            location = input("Location (e.g. London, Colchester, Ipswich): ")
+
+            try:
+                r_id = int(input("ID: "))
+            except ValueError:
+                print("Invalid ID. Must be a number.")
+                continue
+
+            print("\nSelect resource location:")
+            for key, value in LOCATIONS.items():
+                print(f"{key} - {value['name']} ({value['distance']} miles from Chelmsford)")
+
+            while True:
+                try:
+                    loc_choice = int(input("Enter location number: "))
+                    if loc_choice not in LOCATIONS:
+                        raise ValueError
+                    location = get_location_name_by_id(loc_choice)
+                    break
+                except ValueError:
+                    print("Invalid location. Please enter a valid number from the list.")
+
 
             if r_type_str == "ambulance":
                 resource = Ambulance(r_id, location)
@@ -67,12 +100,37 @@ def main():
             resource_manager.add_resource(resource)
             print("Resource added.")
 
+
         elif choice == "2":
             print("\nAdd Incident")
-            i_id = int(input("Incident ID: "))
-            location = input("Location: ")
+            try:
+                i_id = int(input("Incident ID: "))
+            except ValueError:
+                print("Invalid ID. Must be a number.")
+                continue
+
+            print("\nSelect incident location:")
+            for key, value in LOCATIONS.items():
+                print(f"{key} - {value['name']} ({value['distance']} miles from Chelmsford)")
+
+            while True:
+                try:
+                    loc_choice = int(input("Enter location number: "))
+                    if loc_choice not in LOCATIONS:
+                        raise ValueError
+                    location = get_location_name_by_id(loc_choice)
+                    break  
+                except ValueError:
+                    print("Invalid location. Please enter a valid number from the list.")
+
+
+
             e_type = input("Emergency Type: ")
             priority = input("Priority (High/Medium/Low): ").capitalize()
+            if priority not in ["High", "Medium", "Low"]:
+                print("Invalid priority. Must be High, Medium, or Low.")
+                continue
+
 
             required_list = []
             while True:

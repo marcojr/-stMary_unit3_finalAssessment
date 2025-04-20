@@ -1,13 +1,12 @@
+# tests/test_allocator.py
+
 import unittest
-import sys
+
 from allocator import Allocator
 from resource import Ambulance, FireTruck
 from incident import Incident
 from incident_manager import IncidentManager
 from resource_manager import ResourceManager
-
-def setUpModule():
-    sys.stdout = sys.__stdout__
 
 
 class TestAllocator(unittest.TestCase):
@@ -16,59 +15,89 @@ class TestAllocator(unittest.TestCase):
         self.incident_manager = IncidentManager()
         self.allocator = Allocator(self.resource_manager, self.incident_manager)
 
-        # Available resources
-        self.ambulance1 = Ambulance(1, "Zone A")
-        self.truck1 = FireTruck(2, "Zone A")
+        # Resources in diff cities
+        self.ambulance_london = Ambulance(1, "London")      # 30 mi
+        self.ambulance_manchester = Ambulance(2, "Manchester")  # 166 mi
+        self.truck_ipswich = FireTruck(3, "Ipswich")        # 37 mi
 
-        self.resource_manager.add_resource(self.ambulance1)
-        self.resource_manager.add_resource(self.truck1)
+        self.resource_manager.add_resource(self.ambulance_london)
+        self.resource_manager.add_resource(self.ambulance_manchester)
+        self.resource_manager.add_resource(self.truck_ipswich)
 
-        # Incidents
-        self.incident1 = Incident(
-            incident_id=1,
-            location="Zone A",
-            emergency_type="Accident",
-            priority="High",
-            required_resources=["ambulance"]
-        )
+    def test_allocate_prefers_closest_resource(self):
+        incident = Incident(1, "London", "Crash", "High", ["ambulance"])
+        self.incident_manager.add_incident(incident)
 
-        self.incident2 = Incident(
-            incident_id=2,
-            location="Zone A",
-            emergency_type="Fire",
-            priority="Low",
-            required_resources=["fire_truck"]
-        )
-
-        self.incident_manager.add_incident(self.incident1)
-        self.incident_manager.add_incident(self.incident2)
-
-    def test_allocate_resources(self):
-        self.allocator.allocate_resources()
-        self.assertEqual(self.incident1.status, "Assigned")
-        self.assertFalse(self.ambulance1.available)
-
-    def test_reallocate_resources(self):
-         # 1st, force incident1 (low priority) to be allocated
-        self.incident1.priority = "Low"
-        self.incident2.priority = "High"
         self.allocator.allocate_resources()
 
-        # At this point, both can be assigned because we have 2 resources available
-        self.assertEqual(self.incident1.status, "Assigned")
-        self.assertEqual(self.incident2.status, "Assigned")
+        self.assertEqual(incident.status, "Assigned")
+        self.assertFalse(self.ambulance_london.available)
+        self.assertTrue(self.ambulance_manchester.available)
 
-         # Now simulate that the resource from incident1 was released
-        self.incident1.status = "Pending"
-        self.ambulance1.release()
-        self.truck1.assign()  # simula que o caminhão está ocupado com outra coisa
+    def test_allocate_resources_multiple_types(self):
+        incident = Incident(2, "Ipswich", "Accident", "High", ["ambulance", "fire_truck"])
+        self.incident_manager.add_incident(incident)
 
-        # Perform reallocation
+        self.allocator.allocate_resources()
+
+        self.assertEqual(incident.status, "Assigned")
+        self.assertFalse(self.truck_ipswich.available)
+        self.assertFalse(self.truck_ipswich.available)
+        self.assertTrue(
+            not self.ambulance_london.available or not self.ambulance_manchester.available
+        )
+
+
+    def test_no_resources_available(self):
+        self.ambulance_london.assign()
+        self.ambulance_manchester.assign()
+        self.truck_ipswich.assign()
+
+        incident = Incident(3, "London", "Emergency", "High", ["ambulance"])
+        self.incident_manager.add_incident(incident)
+
+        self.allocator.allocate_resources()
+        # Only one Ambulance!
+        self.resource_manager.resources = [self.ambulance_london]
+
+
+    def test_reallocate_resources_priority_switch(self):
+        # Only one ambulance available
+        self.resource_manager.resources = [self.ambulance_london]
+
+        incident1 = Incident(4, "London", "Minor", "Low", ["ambulance"])
+        incident2 = Incident(5, "London", "Critical", "High", ["ambulance"])
+
+        self.incident_manager.add_incident(incident1)
+        self.incident_manager.add_incident(incident2)
+
+        self.allocator.allocate_resources()
+
+        # Confirm first allocation
+        self.assertEqual(incident1.status, "Pending")
+        self.assertEqual(incident2.status, "Assigned")
+
+
+        # Simulate change
+        incident1.status = "Pending"
+        self.ambulance_london.release()
+
         self.allocator.reallocate_resources()
 
-        # Expect incident2 to remain as "Assigned"
-        self.assertEqual(self.incident2.status, "Assigned")
+        # After reallocation, incident2 should be assigned
+        self.assertEqual(incident2.status, "Assigned")
+        self.assertFalse(self.ambulance_london.available)
 
-         # And the truck1 resource is still occupied
-        self.assertFalse(self.truck1.available)
+
+
+    def test_all_resources_too_far_but_still_assigned(self):
+        # Incident in London, only ambulance is in Manchester
+        self.resource_manager.resources = [self.ambulance_manchester]
+
+        incident = Incident(6, "London", "Late Response", "High", ["ambulance"])
+        self.incident_manager.add_incident(incident)
+
+        self.allocator.allocate_resources()
+        self.assertEqual(incident.status, "Assigned")
+        self.assertFalse(self.ambulance_manchester.available)
 

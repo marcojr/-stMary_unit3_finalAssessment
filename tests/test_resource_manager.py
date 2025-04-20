@@ -27,3 +27,8 @@ class TestResourceManager(unittest.TestCase):
         self.assertEqual(len(available), 1)
         self.assertEqual(available[0].type, "ambulance")
 
+    def test_update_nonexistent_resource(self):
+        self.manager.update_resource(999, location="Nowhere")
+        self.assertEqual(len(self.manager.resources), 0)
+
+
