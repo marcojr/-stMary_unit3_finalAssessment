@@ -1,55 +1,58 @@
-# Emergency Resource Allocation System
+# 🚨 Emergency Resource Allocation System
 
-This is a console-based Python application developed for the final assessment of Unit 3 at St. Mary. It simulates emergency resource management, allowing users to register incidents and resources, assign them based on availability and priority, and reallocate resources when necessary.
-
----
-
-## 🚀 Features
-
-- Register incidents (location, type, priority, required resources)
-- Manage emergency resources (ambulances, fire trucks, medical teams)
-- Assign resources automatically based on urgency and availability
-- Reallocate resources to higher priority incidents when needed
-- Console-based interface
-- Fully unit tested (with edge case coverage)
-- Object-oriented and modular design
+This project is a small console-based Python app made for the final assessment of Unit 3 at St. Mary.  
+It helps simulate how emergency resources (like ambulances, fire trucks, etc.) are managed, assigned and reallocated based on incident urgency and location distance.
 
 ---
 
-## 🧩 Technologies
+## ✨ What it does
 
-- Python 3.10+
-- Standard Library only (no external dependencies)
-- `unittest` for test automation
+- Register incidents with details like location, type, priority and what kind of resources are needed  
+- Register and manage emergency resources (ambulances, fire trucks, medical teams)  
+- Assign resources automatically – it chooses the **closest available one**  
+- If something urgent comes up, the system will try to **reallocate from less important stuff**  
+- Clean text interface with menu  
+- Covers edge cases and real scenarios with unit tests  
+- Fully built with OOP and nice modular files
 
 ---
 
-## ⚙️ How to Run the Application
+## 🛠 Tech Stuff
 
-1. Clone the repository:
+- Python 3.10+  
+- Just standard Python (no fancy libraries needed)  
+- Uses `unittest` for test coverage
+
+---
+
+## ▶️ How to Run It
+
+1. Clone this repo to your machine:
 
 ```bash
 git clone https://github.com/marcojr/-stMary_unit3_finalAssessment.git
 cd -stMary_unit3_finalAssessment
 ```
 
-2. Run the console interface:
+2. Run the app:
 
 ```bash
 python console_ui.py
 ```
 
+That’s it! You’ll see a menu with options to play with.
+
 ---
 
-## 🧪 How to Run the Tests
+## ✅ How to Run the Tests
 
-To execute all unit tests:
+To run **all** the tests (they live in the `tests/` folder):
 
 ```bash
 python -m unittest discover -v tests
 ```
 
-Or to run a specific test file (e.g., allocator):
+Or to run just the allocator tests:
 
 ```bash
 python run_allocator_tests.py
@@ -57,35 +60,35 @@ python run_allocator_tests.py
 
 ---
 
-## 📝 Manual Test Instructions
+## 🧪 Manual Testing (Step by Step)
 
-Once running `console_ui.py`, follow this step-by-step guide to test the system manually:
+After launching `console_ui.py`, you can do this:
 
-### 1. Add Resources
-- Option `1` → Add an ambulance with ID `1`, London
-- Option `1` again → Add a fire truck with ID `2`, Manchester
+### 1. Add Some Resources
+- Choose `1` to add an Ambulance (ID: 1, location: London)  
+- Then `1` again to add a Fire Truck (ID: 2, location: Manchester)
 
-### 2. Add Incidents
-- Option `2` → Add Incident ID `1`, location `London`, type `Accident`, priority `High`, requires `Ambulance`
-- Option `2` again → Add Incident ID `2`, location `Manchester`, type `Fire`, priority `Low`, requires `Fire Truck`
+### 2. Add Some Incidents
+- Choose `2`, add incident ID: 1, location: London, type: Accident, priority: High, needs Ambulance  
+- Choose `2` again, incident ID: 2, location: Manchester, type: Fire, priority: Low, needs Fire Truck
 
-### 3. View Resources & Incidents
-- Option `3` to list all resources
-- Option `4` to list all incidents and their current status (should be "Pending")
+### 3. View What’s There
+- Press `3` to see all resources  
+- Press `4` to see all incidents – they should be marked as `Pending` initially
 
-### 4. Allocate Resources
-- Option `5` → Resources will be assigned automatically
+### 4. Let the System Assign Resources
+- Press `5` to allocate. The system will pick the best fit based on priority + location.
 
-### 5. Reallocate (if needed)
-- Option `2` → Add a new high-priority incident requiring an already assigned resource
-- Option `6` → System will try to reassign from a lower-priority incident
+### 5. Reallocation Test
+- Add another incident (e.g. ID: 3, London, High priority) needing something already assigned  
+- Then press `6` to see if it reassigns things smartly
 
 ### 6. Exit
-- Option `0` to safely exit the application
+- Just hit `0` to close the program
 
 ---
 
-## 📁 Project Structure
+## 📦 Project Layout
 
 ```
 .
@@ -93,11 +96,11 @@ Once running `console_ui.py`, follow this step-by-step guide to test the system 
 ├── console_ui.py
 ├── incident.py
 ├── incident_manager.py
+├── locations.py
 ├── resource.py
 ├── resource_manager.py
 ├── run_allocator_tests.py
 ├── tests/
-│   ├── __init__.py
 │   ├── test_allocator.py
 │   ├── test_incident.py
 │   ├── test_incident_manager.py
@@ -107,4 +110,9 @@ Once running `console_ui.py`, follow this step-by-step guide to test the system 
 
 ---
 
+## ✍️ Note from the author
 
+This was built as part of my end of unity acessment, but I tried to make it clean, modular and a bit realistic.  
+Not everything is perfect – there's no database or GUI – but it does the job it's supposed to do.
+
+Thanks for reading! 😄
