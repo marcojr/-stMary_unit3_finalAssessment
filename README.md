@@ -110,6 +110,62 @@ After launching `console_ui.py`, you can do this:
 
 ---
 
+
+---
+
+## 📄 SDLC Documentation
+
+### 1. Requirements Analysis
+- **Key Requirements**: Manage resources (ambulances, fire trucks, medical teams), assign based on proximity, and reallocate for high-priority incidents. It must be a console application using object-oriented principles.
+
+### 2. Design Phase
+- **System Components**: The system has separate components for managing incidents, resources, and allocation logic.
+  - **Incident Manager**: Manages all incidents, updates, and sorting.
+  - **Resource Manager**: Manages available resources and their assignment.
+  - **Allocator**: The algorithm that assigns or reallocates resources.
+  - **Console UI**: Allows user interaction through a simple menu.
+
+### 3. Implementation
+- The code is structured with classes for each resource type (ambulance, fire truck), incidents, and manager classes for handling resources and incidents. It uses Python's standard library without external dependencies.
+
+### 4. Testing
+- **Unit Testing**: Tests ensure that resources are assigned based on proximity and priority. Unit tests also verify that resources are reassigned from lower-priority incidents.
+- **Edge Case Handling**: Tests for scenarios like unavailable resources or incidents with conflicting priorities.
+
+### 5. Deployment
+- The app runs in the console and doesn't require complex deployment. It can be executed with Python 3.10+.
+
+### 6. Maintenance
+- The modular design ensures that new resources, incident types, or even a database integration can be easily added.
+
+
+## 📄 SDLC Documentation
+
+### 1. Requirements Analysis
+- **Key Requirements**: Manage resources (ambulances, fire trucks, medical teams), assign based on proximity, and reallocate for high-priority incidents. It must be a console application using object-oriented principles.
+
+### 2. Design Phase
+- **System Components**: The system has separate components for managing incidents, resources, and allocation logic.
+  - **Incident Manager**: Manages all incidents, updates, and sorting.
+  - **Resource Manager**: Manages available resources and their assignment.
+  - **Allocator**: The algorithm that assigns or reallocates resources.
+  - **Console UI**: Allows user interaction through a simple menu.
+
+### 3. Implementation
+- The code is structured with classes for each resource type (ambulance, fire truck), incidents, and manager classes for handling resources and incidents. It uses Python's standard library without external dependencies.
+
+### 4. Testing
+- **Unit Testing**: Tests ensure that resources are assigned based on proximity and priority. Unit tests also verify that resources are reassigned from lower-priority incidents.
+- **Edge Case Handling**: Tests for scenarios like unavailable resources or incidents with conflicting priorities.
+
+### 5. Deployment
+- The app runs in the console and doesn't require complex deployment. It can be executed with Python 3.10+.
+
+### 6. Maintenance
+- The modular design ensures that new resources, incident types, or even a database integration can be easily added.
+
+
+
 ## ✍️ Note from the author
 
 This was built as part of my end of unity acessment, but I tried to make it clean, modular and a bit realistic.  
